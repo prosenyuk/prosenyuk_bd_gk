@@ -2,6 +2,8 @@ DROP DATABASE IF EXISTS vk;
 CREATE DATABASE vk;
 USE vk;
 
+-- создание таблиц с урока. ДЗ под таблицами
+
 DROP TABLE IF EXISTS users;
 CREATE TABLE users (
 	id SERIAL PRIMARY KEY, -- SERIAL = BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE
@@ -139,4 +141,77 @@ CREATE TABLE `photos` (
     FOREIGN KEY (media_id) REFERENCES media(id)
 );
 
+DROP TABLE IF EXISTS `photos`;
+CREATE TABLE `photos` (
+	id SERIAL PRIMARY KEY,
+	`album_id` BIGINT unsigned NOT NULL,
+	`media_id` BIGINT unsigned NOT NULL,
 
+	FOREIGN KEY (album_id) REFERENCES photo_albums(id),
+    FOREIGN KEY (media_id) REFERENCES media(id)
+);
+
+
+
+/* Задача 1
+Написать крипт, добавляющий в БД vk, которую создали на занятии, 3 новые таблицы (с перечнем полей, указанием индексов и внешних ключей)
+*/
+DROP TABLE IF EXISTS cities;
+CREATE TABLE cities(
+	id SERIAL PRIMARY KEY,
+	name varchar(50)
+);
+
+
+DROP TABLE IF EXISTS metros;
+CREATE TABLE metros(
+	id SERIAL PRIMARY KEY,
+	city_id BIGINT unsigned NOT NULL,
+	name varchar(50),
+
+	FOREIGN KEY (city_id) REFERENCES cities(id)
+);
+
+DROP TABLE IF EXISTS goods_category;
+CREATE TABLE goods_category(
+	id SERIAL PRIMARY KEY,
+	name varchar(50)
+);
+
+DROP TABLE IF EXISTS comments;
+CREATE TABLE comments(
+	id SERIAL PRIMARY KEY,
+	commentator_id BIGINT UNSIGNED NOT NULL,
+	like_id BIGINT UNSIGNED NOT NULL,
+	comment VARCHAR (255),
+	created_at DATETIME DEFAULT NOW(),
+	
+	FOREIGN KEY (commentator_id) REFERENCES users(id),
+	FOREIGN KEY (like_id) REFERENCES likes(id) -- вот тут не уверен что связь именно такая. Лаков может быть много. Как их все собрать?
+);
+
+
+-- таблица Товары
+
+DROP TABLE IF EXISTS goods;
+CREATE TABLE goods(
+	id SERIAL PRIMARY KEY,
+	seller_id BIGINT UNSIGNED NOT NULL,
+	photo_good_id BIGINT UNSIGNED NULL,
+	adress_city_id BIGINT UNSIGNED NULL,
+	adress_metro_id BIGINT UNSIGNED NULL,
+	good_category_id BIGINT UNSIGNED NULL,
+	comment_id BIGINT UNSIGNED NULL,
+	name VARCHAR(250),
+	price DECIMAL(10, 2),
+	description TEXT,
+	created_at DATETIME DEFAULT NOW(),
+	
+	INDEX (name),
+	FOREIGN KEY (seller_id) REFERENCES users(id),
+	FOREIGN KEY (photo_good_id) REFERENCES photos(id),
+	FOREIGN KEY (adress_city_id) REFERENCES cities(id),
+	FOREIGN KEY (adress_metro_id) REFERENCES metros(id),
+	FOREIGN KEY (good_category_id) REFERENCES goods_category(id),
+	FOREIGN KEY (comment_id) REFERENCES comments(id)
+);
