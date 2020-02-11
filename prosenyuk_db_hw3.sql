@@ -11,6 +11,7 @@ CREATE TABLE users (
     lastname VARCHAR(50) COMMENT 'Фамиль', -- COMMENT на случай, если имя неочевидное
     email VARCHAR(120) UNIQUE,
     phone BIGINT, 
+    is_active = int,
     INDEX users_phone_idx(phone), -- как выбирать индексы?
     INDEX users_firstname_lastname_idx(firstname, lastname)
 );
