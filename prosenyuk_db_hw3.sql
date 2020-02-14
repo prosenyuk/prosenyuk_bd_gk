@@ -11,7 +11,6 @@ CREATE TABLE users (
     lastname VARCHAR(50) COMMENT 'Фамиль', -- COMMENT на случай, если имя неочевидное
     email VARCHAR(120) UNIQUE,
     phone BIGINT, 
-    is_active = int,
     INDEX users_phone_idx(phone), -- как выбирать индексы?
     INDEX users_firstname_lastname_idx(firstname, lastname)
 );
@@ -111,15 +110,11 @@ CREATE TABLE likes(
 	id SERIAL PRIMARY KEY,
     user_id BIGINT UNSIGNED NOT NULL,
     media_id BIGINT UNSIGNED NOT NULL,
-    created_at DATETIME DEFAULT NOW()
+    created_at DATETIME DEFAULT NOW(), 
+    
+    FOREIGN KEY (user_id) REFERENCES users(id), 
+    FOREIGN KEY (media_id) REFERENCES media(id)
 
-    -- PRIMARY KEY (user_id, media_id) – можно было и так вместо id в качестве PK
-  	-- слишком увлекаться индексами тоже опасно, рациональнее их добавлять по мере необходимости (напр., провисают по времени какие-то запросы)  
-
-/* намеренно забыли, чтобы увидеть нехватку в ER-диаграмме
-    , FOREIGN KEY (user_id) REFERENCES users(id)
-    , FOREIGN KEY (media_id) REFERENCES media(id)
-*/
 );
 
 DROP TABLE IF EXISTS `photo_albums`;
@@ -141,17 +136,6 @@ CREATE TABLE `photos` (
 	FOREIGN KEY (album_id) REFERENCES photo_albums(id),
     FOREIGN KEY (media_id) REFERENCES media(id)
 );
-
-DROP TABLE IF EXISTS `photos`;
-CREATE TABLE `photos` (
-	id SERIAL PRIMARY KEY,
-	`album_id` BIGINT unsigned NOT NULL,
-	`media_id` BIGINT unsigned NOT NULL,
-
-	FOREIGN KEY (album_id) REFERENCES photo_albums(id),
-    FOREIGN KEY (media_id) REFERENCES media(id)
-);
-
 
 
 /* Задача 1
